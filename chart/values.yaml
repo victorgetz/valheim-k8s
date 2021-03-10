@@ -1,15 +1,29 @@
 worldName: example-world-name
 serverName: example-server-name
 password: password 
-
 resources: {}
-
+#  requests:
+#    memory: 256Mi
+#    cpu: 250m
+#  limits:
+#    memory: 256Mi
+#    cpu: 250m
 storage:
-  kind: hostvol
-  hostvol:
-    path: /data/valheim
+  enabled: true
+  path: /data/valheim
+  hostVolume:
+    enabled: false
+  pvc:
+    enabled: true
+    name: valheim-pvc
+    accessMode: "ReadWriteOnce"
+    storageClassName: default
+    resources:
+      requests:
+        storage: 30Gi
 
 networking:
   serviceType: LoadBalancer
 
 nodeSelector: {}
+

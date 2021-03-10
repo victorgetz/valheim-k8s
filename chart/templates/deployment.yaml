@@ -13,36 +13,45 @@ spec:
     spec:
       {{- with .Values.nodeSelector }}
       nodeSelector:
-        {{- toYaml . | nindent 8 }}
+      {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
-      - image: lloesche/valheim-server:latest
-        name: vailheim-server
-        env:
-        - name: SERVER_NAME
-          value: {{ .Values.serverName }}
-        - name: WORLD_NAME
-          value: {{ .Values.worldName }}
-        - name: SERVER_PASS
-          value: {{ .Values.password }}
-        ports:
-        - containerPort: 2456
-          name: game1
-        - containerPort: 2457
-          name: game2
-        - containerPort: 2458
-          name: game3
-        {{ if eq .Values.storage.kind "hostvol" }}
-        volumeMounts:
-        - mountPath: /config
-          name: gamefiles
-        {{ end }}
-        resources: {{- toYaml .Values.resources | nindent 10 }}
-      {{ if eq .Values.storage.kind "hostvol" }}
+        - image: lloesche/valheim-server:latest
+          name: vailheim-server
+          env:
+            - name: SERVER_NAME
+              value: {{ .Values.serverName }}
+            - name: WORLD_NAME
+              value: {{ .Values.worldName }}
+            - name: SERVER_PASS
+              value: {{ .Values.password }}
+          ports:
+            - containerPort: 2456
+              name: game1
+            - containerPort: 2457
+              name: game2
+            - containerPort: 2458
+              name: game3
+          {{- if .Values.storage.enabled }}
+          volumeMounts:
+            - mountPath: /config
+              name: gamefiles
+          {{- end }}
+          {{- if .Values.resources }}
+          resources:
+          {{- toYaml .Values.resources | nindent 12}}
+          {{- end }}
+      {{- if .Values.storage.enabled }}
       volumes:
-      - name: gamefiles
-        hostPath:
-          path: {{ .Values.storage.hostvol.path }}
-          type: Directory
-      {{ end }}
-
+        - name: gamefiles
+          {{- if .Values.storage.hostVolume.enabled }}
+          hostPath:
+            path: {{ .Values.storage.path }}
+            type: Directory
+          {{- end}}
+          {{- if .Values.storage.pvc.enabled }}
+          persistentVolumeClaim:
+            claimName: {{.Values.storage.pvc.name}}
+            readOnly: false
+          {{- end}}
+  {{- end }}
