@@ -1,30 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: valheim-server
+  name: {{.Release.Name}}
 spec:
   selector:
     matchLabels:
-      app: valheim-server
+      app: {{.Release.Name}}
   template:
     metadata:
       labels:
-        app: valheim-server
+        app: {{.Release.Name}}
     spec:
       {{- with .Values.nodeSelector }}
       nodeSelector:
       {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+      {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
       containers:
         - image: lloesche/valheim-server:latest
           name: vailheim-server
-          env:
-            - name: SERVER_NAME
-              value: {{ .Values.serverName }}
-            - name: WORLD_NAME
-              value: {{ .Values.worldName }}
-            - name: SERVER_PASS
-              value: {{ .Values.password }}
+          envFrom:
+            - secretRef:
+                name: {{.Release.Name}}-secrets
           ports:
             - containerPort: 2456
               name: game1

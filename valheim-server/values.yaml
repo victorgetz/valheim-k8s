@@ -1,0 +1,46 @@
+imagePullSecrets:
+  - name: dockerhub-secret
+image:
+  repository: "hashicorp/vault-k8s"
+  tag: "0.7.0"
+  pullPolicy: IfNotPresent
+secrets:
+  SERVER_NAME: example-server-name
+  WORLD_NAME: example-world-name
+  PASSWORD: password
+games:
+  - name: game1
+    containerPort: 2456
+    exposedPort: 2456
+  - name: game2
+    containerPort: 2457
+    exposedPort: 2457
+  - name: game3
+    containerPort: 2458
+    exposedPort: 2458
+resources: {}
+#  requests:
+#    memory: 256Mi
+#    cpu: 250m
+#  limits:
+#    memory: 256Mi
+#    cpu: 250m
+storage:
+  enabled: true
+  path: /data/valheim
+  hostVolume:
+    enabled: false
+  pvc:
+    enabled: true
+    name: valheim-pvc
+    accessMode: "ReadWriteOnce"
+    storageClassName: default
+    resources:
+      requests:
+        storage: 30Gi
+
+networking:
+  serviceType: LoadBalancer
+
+nodeSelector: {}
+
