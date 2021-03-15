@@ -8,6 +8,8 @@ spec:
       app: {{.Release.Name}}
   template:
     metadata:
+      annotations:
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
       labels:
         app: {{.Release.Name}}
     spec:
