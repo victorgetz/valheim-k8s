@@ -7,17 +7,7 @@ image:
 secrets:
   SERVER_NAME: example-server-name
   WORLD_NAME: example-world-name
-  PASSWORD: password
-games:
-  - name: game1
-    containerPort: 2456
-    exposedPort: 2456
-  - name: game2
-    containerPort: 2457
-    exposedPort: 2457
-  - name: game3
-    containerPort: 2458
-    exposedPort: 2458
+  SERVER_PASS: password
 resources: {}
 #  requests:
 #    memory: 256Mi
@@ -38,8 +28,17 @@ storage:
     resources:
       requests:
         storage: 30Gi
-
 networking:
+  portMapping:
+    - name: game1
+      containerPort: 2456
+      exposedPort: 2456
+    - name: game2
+      containerPort: 2457
+      exposedPort: 2457
+    - name: game3
+      containerPort: 2458
+      exposedPort: 2458
   serviceType: LoadBalancer
 
 nodeSelector: {}

@@ -26,12 +26,12 @@ spec:
             - secretRef:
                 name: {{.Release.Name}}-secrets
           ports:
-            - containerPort: 2456
-              name: game1
-            - containerPort: 2457
-              name: game2
-            - containerPort: 2458
-              name: game3
+            {{- range $i, $gamePortMapping := .Values.networking.portMapping }}
+            - name: {{ $gamePortMapping.name }}
+              containerPort: {{ $gamePortMapping.containerPort }}
+              hostPort: {{ $gamePortMapping.exposedPort }}
+              protocol: UDP
+            {{- end }}
           {{- if .Values.storage.enabled }}
           volumeMounts:
             - mountPath: /config
